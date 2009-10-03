@@ -1,0 +1,131 @@
+SET search_path='public';
+
+CREATE OR REPLACE FUNCTION blbuild(internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C;
+
+CREATE OR REPLACE FUNCTION blinsert(internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C;
+
+CREATE OR REPLACE FUNCTION bloptions(internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C;
+
+CREATE OR REPLACE FUNCTION blbeginscan(internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C;
+
+CREATE OR REPLACE FUNCTION blrescan(internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C;
+
+CREATE OR REPLACE FUNCTION blendscan(internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C;
+
+CREATE OR REPLACE FUNCTION blmarkpos(internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C;
+
+CREATE OR REPLACE FUNCTION blrestrpos(internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C;
+
+CREATE OR REPLACE FUNCTION blgetbitmap(internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C;
+
+CREATE OR REPLACE FUNCTION blbulkdelete(internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C;
+
+CREATE OR REPLACE FUNCTION blvacuumcleanup(internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C;
+
+CREATE OR REPLACE FUNCTION blcostestimate(internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C;
+
+INSERT INTO pg_am (
+    amname,
+	amstrategies,
+	amsupport,
+	amcanorder,
+	amcanbackward,
+	amcanunique,
+	amcanmulticol,
+	amoptionalkey,
+	amindexnulls,
+	amsearchnulls,
+	amstorage,
+	amclusterable,
+	amkeytype,
+	aminsert,
+	ambeginscan,
+	amgettuple,
+	amgetbitmap,
+	amrescan,
+	amendscan,
+	ammarkpos,
+	amrestrpos,
+	ambuild,
+	ambulkdelete,
+	amvacuumcleanup,
+	amcostestimate,
+	amoptions
+) VALUES (
+	'bloom',			--amname
+	1,					--amstrategies
+	1,					--amsupport
+	'f',				--amcanorder
+	'f',				--amcanbackward
+	'f',				--amcanunique
+	't',				--amcanmulticol
+	't',				--amoptionalkey
+	't',				--amindexnulls
+	'f',				--amsearchnulls
+	'f',				--amstorage
+	'f',				--amclusterable
+	2281,				--amkeytype
+	'blinsert',			--aminsert
+	'blbeginscan',		--ambeginscan
+	'-',				--amgettuple
+	'blgetbitmap',		--amgetbitmap
+	'blrescan',			--amrescan
+	'blendscan',		--amendscan
+	'blmarkpos',		--ammarkpos
+	'blrestrpos',		--amrestrpos
+	'blbuild',			--ambuild
+	'blbulkdelete', 	--ambulkdelete
+	'blvacuumcleanup',	--amvacuumcleanup
+	'blcostestimate',	--amcostestimate
+	'bloptions'			--amoptions
+);
+
+--opclasses
+
+CREATE OPERATOR CLASS int4_ops 
+DEFAULT FOR TYPE int4 USING bloom AS
+	OPERATOR	1	=(int4, int4),
+	FUNCTION	1	hashint4(int4);
+
+CREATE OPERATOR CLASS text_ops 
+DEFAULT FOR TYPE text USING bloom AS
+	OPERATOR	1	=(text, text),
+	FUNCTION	1	hashtext(text);
+
+
