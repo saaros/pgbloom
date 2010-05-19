@@ -36,10 +36,7 @@ blbulkdelete(PG_FUNCTION_ARGS)
 
 	initBloomState(&state, index); 
 
-	if (info->vacuum_full)
-		needLock = false;
-	else
-		needLock = !RELATION_IS_LOCAL(index);
+	needLock = !RELATION_IS_LOCAL(index);
 
 	if (needLock)
 		LockRelationForExtension(index, ExclusiveLock);
@@ -150,10 +147,7 @@ blvacuumcleanup(PG_FUNCTION_ARGS)
 	if (stats == NULL)
 		stats = (IndexBulkDeleteResult *) palloc0(sizeof(IndexBulkDeleteResult));
 
-	if (info->vacuum_full)
-		needLock = false;
-	else
-		needLock = !RELATION_IS_LOCAL(index);
+	needLock = !RELATION_IS_LOCAL(index);
 
 	if (needLock)
 		LockRelationForExtension(index, ExclusiveLock);
@@ -190,7 +184,7 @@ blvacuumcleanup(PG_FUNCTION_ARGS)
 	}
 
 	lastBlock = npages - 1;
-	if (info->vacuum_full && lastBlock > lastFilledBlock)
+	if (lastBlock > lastFilledBlock)
 	{
 		RelationTruncate(index, lastFilledBlock + 1);
 		stats->pages_removed = lastBlock - lastFilledBlock;
