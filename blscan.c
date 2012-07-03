@@ -191,3 +191,15 @@ blgetbitmap(PG_FUNCTION_ARGS)
 	PG_RETURN_INT64(ntids);
 }
 
+/*
+ *      blcanreturn() -- Check whether bloom filters support index-only scans.
+ *
+ * bloom filters can never do this so the check is fairly simple.
+ */
+PG_FUNCTION_INFO_V1(blcanreturn);
+Datum       blcanreturn(PG_FUNCTION_ARGS);
+Datum
+blcanreturn(PG_FUNCTION_ARGS)
+{
+	PG_RETURN_BOOL(false);
+}

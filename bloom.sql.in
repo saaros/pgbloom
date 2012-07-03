@@ -5,6 +5,11 @@ RETURNS internal
 AS 'MODULE_PATHNAME'
 LANGUAGE C;
 
+CREATE OR REPLACE FUNCTION blbuildempty(internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C;
+
 CREATE OR REPLACE FUNCTION blinsert(internal)
 RETURNS internal
 AS 'MODULE_PATHNAME'
@@ -55,24 +60,31 @@ RETURNS internal
 AS 'MODULE_PATHNAME'
 LANGUAGE C;
 
+CREATE OR REPLACE FUNCTION blcanreturn(internal)
+RETURNS internal
+AS 'MODULE_PATHNAME'
+LANGUAGE C;
+
 CREATE OR REPLACE FUNCTION blcostestimate(internal)
 RETURNS internal
 AS 'MODULE_PATHNAME'
 LANGUAGE C;
 
 INSERT INTO pg_am (
-    amname,
+	amname,
 	amstrategies,
 	amsupport,
 	amcanorder,
+	amcanorderbyop,
 	amcanbackward,
 	amcanunique,
 	amcanmulticol,
 	amoptionalkey,
-	amindexnulls,
+	amsearcharray,
 	amsearchnulls,
 	amstorage,
 	amclusterable,
+	ampredlocks,
 	amkeytype,
 	aminsert,
 	ambeginscan,
@@ -83,37 +95,43 @@ INSERT INTO pg_am (
 	ammarkpos,
 	amrestrpos,
 	ambuild,
+	ambuildempty,
 	ambulkdelete,
 	amvacuumcleanup,
+	amcanreturn,
 	amcostestimate,
 	amoptions
 ) VALUES (
-	'bloom',			--amname
-	1,					--amstrategies
-	1,					--amsupport
-	'f',				--amcanorder
-	'f',				--amcanbackward
-	'f',				--amcanunique
-	't',				--amcanmulticol
-	't',				--amoptionalkey
-	't',				--amindexnulls
-	'f',				--amsearchnulls
-	'f',				--amstorage
-	'f',				--amclusterable
-	2281,				--amkeytype
-	'blinsert',			--aminsert
+	'bloom',		--amname
+	1,			--amstrategies
+	1,			--amsupport
+	'f',			--amcanorder
+	'f',			--amcanorderbyop
+	'f',			--amcanbackward
+	'f',			--amcanunique
+	't',			--amcanmulticol
+	't',			--amoptionalkey
+	'f',			--amsearcharrays	???
+	'f',			--amsearchnulls
+	'f',			--amstorage
+	'f',			--amclusterable
+	'f',			--ampredlocks
+	2281,			--amkeytype
+	'blinsert',		--aminsert
 	'blbeginscan',		--ambeginscan
-	'-',				--amgettuple
+	'-',			--amgettuple
 	'blgetbitmap',		--amgetbitmap
-	'blrescan',			--amrescan
+	'blrescan',		--amrescan
 	'blendscan',		--amendscan
 	'blmarkpos',		--ammarkpos
 	'blrestrpos',		--amrestrpos
-	'blbuild',			--ambuild
+	'blbuild',		--ambuild
+	'blbuildempty',		--ambuildempty		??? to be written ???
 	'blbulkdelete', 	--ambulkdelete
 	'blvacuumcleanup',	--amvacuumcleanup
+	'blcanreturn',		--amcanreturn
 	'blcostestimate',	--amcostestimate
-	'bloptions'			--amoptions
+	'bloptions'		--amoptions
 );
 
 --opclasses
@@ -127,5 +145,7 @@ CREATE OPERATOR CLASS text_ops
 DEFAULT FOR TYPE text USING bloom AS
 	OPERATOR	1	=(text, text),
 	FUNCTION	1	hashtext(text);
+
+
 
 

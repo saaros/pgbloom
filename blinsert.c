@@ -6,6 +6,7 @@
 #include "storage/bufmgr.h"
 #include "storage/indexfsm.h"
 #include "utils/memutils.h"
+#include "utils/rel.h"
 
 #include "bloom.h"
 
@@ -107,6 +108,19 @@ blbuild(PG_FUNCTION_ARGS)
 	result->heap_tuples = result->index_tuples = reltuples;
 
 	PG_RETURN_POINTER(result);
+}
+
+PG_FUNCTION_INFO_V1(blbuildempty);
+Datum       blbuildempty(PG_FUNCTION_ARGS);
+Datum
+blbuildempty(PG_FUNCTION_ARGS)
+{
+	elog(NOTICE, "blbuildempty: FIX ME");
+        ereport(ERROR,
+                        (errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
+                         errmsg("unlogged bloom indexes are not supported")));
+
+        PG_RETURN_VOID();
 }
 
 static bool
